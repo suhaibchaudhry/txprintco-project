@@ -1,17 +1,14 @@
 {
   "dependencies": {
-    "nano": ">=6.1.4"
+    "nano": ">=6.1.4",
+    "lodash": ">=3.10.1"
   },
-  "name": "txprintco-app",
+  "name": "elastic-indexing",
   "private": true,
   "version": "0.0.1",
-  "description": "TX Printco public facing application.",
-  "keywords": [],
-  "scripts": {
-    "debug": "node debug app.js",
-    "start": "node app.js"
-  },
-  "main": "app.js",
+  "description": "Build elastic search indexes.",
+  "keywords": ['txprintco'],
+  "main": "build.js",
   "repository": {
     "type": "git",
     "url": "git://git@bitbucket.org:uitouxteam/tx-printco-web-app.git"
