@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+var _ = require('lodash');
+
 var host = 'root:xyz786@office.uitoux.com';
 var port = '5988';
 var dbname = 'txprintco_dev_stage16';
