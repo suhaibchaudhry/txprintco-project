@@ -7,7 +7,7 @@
   "private": true,
   "version": "0.0.1",
   "description": "Build elastic search indexes.",
-  "keywords": ['txprintco'],
+  "keywords": "txprintco",
   "main": "build.js",
   "repository": {
     "type": "git",
