@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "nano": ">=6.1.4",
-    "lodash": ">=3.10.1"
+    "lodash": ">=3.10.1",
+    "node-monkey": ">=0.2.16"
   },
   "name": "elastic-indexing",
   "private": true,
