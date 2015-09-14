@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "nano": ">=6.1.4"
+  },
+  "name": "txprintco-app",
+  "private": true,
+  "version": "0.0.1",
+  "description": "TX Printco public facing application.",
+  "keywords": [],
+  "scripts": {
+    "debug": "node debug app.js",
+    "start": "node app.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://git@bitbucket.org:uitouxteam/tx-printco-web-app.git"
+  },
+  "author": "Asad Hasan",
+  "license": ""
+}
