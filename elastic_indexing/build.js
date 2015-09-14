@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('node-monkey').start({host: "127.0.0.1", port:"50500"});
 var _ = require('lodash');
 
 var host = 'root:xyz786@office.uitoux.com';
