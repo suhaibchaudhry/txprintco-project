@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 require('node-monkey').start({host: "127.0.0.1", port:"50500"});
+var http = require('http');
 var _ = require('lodash');
 
 var host = 'root:xyz786@office.uitoux.com';
@@ -34,6 +35,15 @@ var txprintcoData = {
 	}
 };
 
+//Delete Existing Index
+http.request({
+  host: 'localhost',
+  port: 9200,
+  path: '/product',
+  method: 'DELETE'
+}).end();
+
+//Build New Index
 txprintcoData.makeDataRequest('filters-object',
                 {},
                 function(req, res) {
@@ -41,10 +51,12 @@ txprintcoData.makeDataRequest('filters-object',
 
                   _.each(res, function(rows) {
                     var vocabs = rows['value']['categories'];
+                    var product_type = rows['key'];
                     _.each(vocabs, function(vocab) {
                       _.each(vocab.options, function(term) {
                         _.each(term.products, function(product) {
                           docs.push({
+                              product_type: product_type,
                               term_name: term.term_name,
                               vocab_machine_name: vocab.vocabulary_machine_name,
                               vocab_name: vocab.vocabulary_en_name,
@@ -55,9 +67,15 @@ txprintcoData.makeDataRequest('filters-object',
                     });
                   });
 
-                  console.log(docs);
+                  _.each(docs, function(doc) {
+                    http.request({
+                      host: 'localhost',
+                      port: 9200,
+                      path: '/product/'+doc.product_type,
+                      method: 'POST',
+                    }).write(doc).end();
+                  });
                 },
                 function() {
                   console.log('Error contacting database.');
-                }
-);
+                });
