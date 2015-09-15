@@ -37,7 +37,25 @@ var txprintcoData = {
 txprintcoData.makeDataRequest('filters-object',
                 {},
                 function(req, res) {
-                  console.log(res);
+                  var docs = [];
+
+                  _.each(res, function(rows) {
+                    var vocabs = rows['value']['categories'];
+                    _.each(vocabs, function(vocab) {
+                      _.each(vocab.options, function(term) {
+                        _.each(term.products, function(product) {
+                          docs.push({
+                              term_name: term.term_name,
+                              vocab_machine_name: vocab.vocabulary_machine_name,
+                              vocab_name: vocab.vocabulary_en_name,
+                              product_id: product
+                          });
+                        });
+                      });
+                    });
+                  });
+
+                  console.log(docs);
                 },
                 function() {
                   console.log('Error contacting database.');
