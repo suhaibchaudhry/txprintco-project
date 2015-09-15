@@ -2,6 +2,7 @@
 require('node-monkey').start({host: "127.0.0.1", port:"50500"});
 var http = require('http');
 var _ = require('lodash');
+var ElasticSearchClient = require('elasticsearchclient');
 
 var host = 'root:xyz786@office.uitoux.com';
 var port = '5988';
@@ -19,6 +20,10 @@ var txprintco = {
     design_doc: 'txprintco'
 };
 
+var elasticSearchClient = new ElasticSearchClient({
+    host: 'localhost',
+    port: 9200
+});
 
 var txprintcoData = {
 	design_doc: txprintco.design_doc,
@@ -68,12 +73,11 @@ txprintcoData.makeDataRequest('filters-object',
                   });
 
                   _.each(docs, function(doc) {
-                    http.request({
-                      host: 'localhost',
-                      port: 9200,
-                      path: '/product/'+doc.product_type,
-                      method: 'POST',
-                    }).write(doc).end();
+                    elasticSearchClient.index('product', doc.product_type, doc)
+                      .on('data', function(data) {
+                          console.log(data)
+                      })
+                      .exec();
                   });
                 },
                 function() {

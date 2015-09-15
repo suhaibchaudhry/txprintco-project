@@ -2,7 +2,8 @@
   "dependencies": {
     "nano": ">=6.1.4",
     "lodash": ">=3.10.1",
-    "node-monkey": ">=0.2.16"
+    "node-monkey": ">=0.2.16",
+    "elasticsearchclient": ">=0.5.3"
   },
   "name": "elastic-indexing",
   "private": true,
