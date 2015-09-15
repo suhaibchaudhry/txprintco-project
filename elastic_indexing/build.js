@@ -41,6 +41,8 @@ var txprintcoData = {
 };
 
 //Delete Existing Index
+console.log('Deleting Existing Index');
+
 http.request({
   host: 'localhost',
   port: 9200,
@@ -48,6 +50,7 @@ http.request({
   method: 'DELETE'
 }).end();
 
+console.log('Building New Index');
 //Build New Index
 txprintcoData.makeDataRequest('filters-object',
                 {},
