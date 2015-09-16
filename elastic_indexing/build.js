@@ -63,28 +63,28 @@ var req = http.request({
         console.log("Create Fresh Product Index: " + chunk);
     });
 });
-req.write(JSON.stringify({
-  "mappings": {
-    "document": {
-      "dynamic_templates": [
-        {
-          "string_template": {
-            "path_match": "vocabs.*",
-            "mapping": {
-              "type": "string",
-              "index": "not_analyzed"
-            }
-          }
-        }
-      ],
-      "properties": {
-        "vocabs": {
-          "type": "nested"
-        }
-      }
-    }
-  }
-}));
+// req.write(JSON.stringify({
+//   "mappings": {
+//     "product": {
+//       "dynamic_templates": [
+//         {
+//           "string_template": {
+//             "match": "*",
+//             "mapping": {
+//               "type": "string",
+//               "index": "not_analyzed"
+//             }
+//           }
+//         }
+//       ],
+//       "properties": {
+//         "vocabs": {
+//           "type": "nested"
+//         }
+//       }
+//     }
+//   }
+// }));
 req.end();
 
 //Build New Index
@@ -104,12 +104,34 @@ txprintcoData.makeDataRequest('filters-object',
                           "type": "string",
                           "index": "not_analyzed"
                         },
+                        "vocabs": {},
                         "product_id": {
                           "type": "string",
                           "index": "not_analyzed"
                         }
                       }
                     };
+
+                    _.each(vocabs, function(vocab) {
+                      _.each(vocab.options, function(term) {
+                        _.each(term.products, function(product) {
+                          var doc = {
+                              product_type: product_type,
+                              //term_name: term.term_name,
+                              //vocab_machine_name: vocab.vocabulary_machine_name,
+                              //vocab_name: vocab.vocabulary_en_name,
+                              vocabs: {},
+                              product_id: product
+                          };
+                          mapping[product_type]["properties"]["vocabs"][vocab.vocabulary_machine_name] = {
+                            "type": "string",
+                            "index": "not_analyzed"
+                          };
+                          doc["vocabs"][vocab.vocabulary_machine_name] = term.term_name;
+                          docs.push(doc);
+                        });
+                      });
+                    });
 
                     var req = http.request({
                       host: 'localhost',
@@ -124,23 +146,6 @@ txprintcoData.makeDataRequest('filters-object',
                     });
                     req.write(JSON.stringify(mapping));
                     req.end();
-
-                    _.each(vocabs, function(vocab) {
-                      _.each(vocab.options, function(term) {
-                        _.each(term.products, function(product) {
-                          var doc = {
-                              product_type: product_type,
-                              //term_name: term.term_name,
-                              //vocab_machine_name: vocab.vocabulary_machine_name,
-                              //vocab_name: vocab.vocabulary_en_name,
-                              vocabs: {},
-                              product_id: product
-                          };
-                          doc["vocabs"][vocab.vocabulary_machine_name] = term.term_name;
-                          docs.push(doc);
-                        });
-                      });
-                    });
                   });
 
                   _.each(docs, function(doc) {
