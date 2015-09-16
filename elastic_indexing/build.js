@@ -60,16 +60,51 @@ txprintcoData.makeDataRequest('filters-object',
                   _.each(res, function(rows) {
                     var vocabs = rows['value']['categories'];
                     var product_type = rows['key'];
+
+                    var mapping = {};
+                    mapping[product_type] = {
+                      "properties": {
+                        "product_type": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                        },
+                        "term_name": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                        },
+                        "vocab_machine_name": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                        },
+                        "vocab_name": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                        },
+                        "product_id": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                        }
+                      }
+                    };
+
+                    http.request({
+                      host: 'localhost',
+                      port: 9200,
+                      path: '/product/'+doc.product_type+'/_mapping',
+                      method: 'PUT'
+                    }).write(JSON.stringify(mapping)).end();
+
                     _.each(vocabs, function(vocab) {
                       _.each(vocab.options, function(term) {
                         _.each(term.products, function(product) {
-                          docs.push({
+                          var doc = {
                               product_type: product_type,
                               term_name: term.term_name,
                               vocab_machine_name: vocab.vocabulary_machine_name,
                               vocab_name: vocab.vocabulary_en_name,
                               product_id: product
-                          });
+                          };
+                          docs.push(doc);
                         });
                       });
                     });
@@ -79,9 +114,10 @@ txprintcoData.makeDataRequest('filters-object',
                     elasticSearchClient.index('product', doc.product_type, doc)
                       .on('data', function(data) {
                           console.log(data)
-                      })
-                      .exec();
+                      }).exec();
                   });
+
+
                 },
                 function() {
                   console.log('Error contacting database.');
