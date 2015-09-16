@@ -51,6 +51,20 @@ http.request({
 }).end();
 
 console.log('Building New Index');
+
+var req = http.request({
+  host: 'localhost',
+  port: 9200,
+  path: '/product',
+  method: 'PUT'
+}, function(res) {
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+        console.log("Create Fresh Product Index: " + chunk);
+    });
+});
+req.end();
+
 //Build New Index
 txprintcoData.makeDataRequest('filters-object',
                 {},
@@ -92,6 +106,11 @@ txprintcoData.makeDataRequest('filters-object',
                       port: 9200,
                       path: '/product/'+product_type+'/_mapping',
                       method: 'PUT'
+                    }, function(res) {
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            console.log("Setup Mapping ("+product_type+"): " + chunk);
+                        });
                     });
                     req.write(JSON.stringify(mapping));
                     req.end();
@@ -118,8 +137,6 @@ txprintcoData.makeDataRequest('filters-object',
                           console.log(data)
                       }).exec();
                   });
-
-
                 },
                 function() {
                   console.log('Error contacting database.');
