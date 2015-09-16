@@ -90,7 +90,7 @@ txprintcoData.makeDataRequest('filters-object',
                     http.request({
                       host: 'localhost',
                       port: 9200,
-                      path: '/product/'+doc.product_type+'/_mapping',
+                      path: '/product/'+product_type+'/_mapping',
                       method: 'PUT'
                     }).write(JSON.stringify(mapping)).end();
 
