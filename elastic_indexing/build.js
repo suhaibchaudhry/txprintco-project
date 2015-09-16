@@ -63,6 +63,28 @@ var req = http.request({
         console.log("Create Fresh Product Index: " + chunk);
     });
 });
+req.write(JSON.stringify({
+  "mappings": {
+    "document": {
+      "dynamic_templates": [
+        {
+          "string_template": {
+            "path_match": "vocabs.*",
+            "mapping": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        }
+      ],
+      "vocabs": {
+        "tags": {
+          "type": "nested"
+        }
+      }
+    }
+  }
+}));
 req.end();
 
 //Build New Index
@@ -79,18 +101,6 @@ txprintcoData.makeDataRequest('filters-object',
                     mapping[product_type] = {
                       "properties": {
                         "product_type": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "term_name": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "vocab_machine_name": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "vocab_name": {
                           "type": "string",
                           "index": "not_analyzed"
                         },
@@ -120,11 +130,13 @@ txprintcoData.makeDataRequest('filters-object',
                         _.each(term.products, function(product) {
                           var doc = {
                               product_type: product_type,
-                              term_name: term.term_name,
-                              vocab_machine_name: vocab.vocabulary_machine_name,
-                              vocab_name: vocab.vocabulary_en_name,
+                              //term_name: term.term_name,
+                              //vocab_machine_name: vocab.vocabulary_machine_name,
+                              //vocab_name: vocab.vocabulary_en_name,
+                              vocabs: {},
                               product_id: product
                           };
+                          doc["vocabs"][vocab.vocabulary_machine_name] = term.term_name;
                           docs.push(doc);
                         });
                       });
