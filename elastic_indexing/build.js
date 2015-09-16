@@ -87,12 +87,14 @@ txprintcoData.makeDataRequest('filters-object',
                       }
                     };
 
-                    http.request({
+                    var req = http.request({
                       host: 'localhost',
                       port: 9200,
                       path: '/product/'+product_type+'/_mapping',
                       method: 'PUT'
-                    }).write(JSON.stringify(mapping)).end();
+                    });
+                    req.write(JSON.stringify(mapping));
+                    req.end();
 
                     _.each(vocabs, function(vocab) {
                       _.each(vocab.options, function(term) {
