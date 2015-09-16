@@ -77,8 +77,8 @@ req.write(JSON.stringify({
           }
         }
       ],
-      "vocabs": {
-        "tags": {
+      "properties": {
+        "vocabs": {
           "type": "nested"
         }
       }
