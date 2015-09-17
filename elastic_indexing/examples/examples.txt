@@ -1,0 +1,30 @@
+GET /product/business-cards/_search
+{
+     "query": {
+        "filtered": {
+          "filter": { "and": [ { "terms": { "dimensions" : ["1.75\" x 3.5\""] } }, { "terms": { "stock" : ["14 Point Uncoated"] } } ] }
+        }
+     },
+    "aggs": {
+        "dimensions": {
+            "terms": {
+                "field": "dimensions"
+            }
+        },
+        "stock": {
+            "terms": {
+                "field": "stock"
+            }
+        },
+        "coating": {
+            "terms": {
+                "field": "coating"
+            }
+        },
+        "roundcorners": {
+            "terms": {
+                "field": "roundcorners"
+            }
+        }
+    }
+}
