@@ -104,7 +104,6 @@ txprintcoData.makeDataRequest('filters-object',
                           "type": "string",
                           "index": "not_analyzed"
                         },
-                        "vocabs": {},
                         "product_id": {
                           "type": "string",
                           "index": "not_analyzed"
@@ -123,11 +122,11 @@ txprintcoData.makeDataRequest('filters-object',
                               vocabs: {},
                               product_id: product
                           };
-                          mapping[product_type]["properties"]["vocabs"][vocab.vocabulary_machine_name] = {
+                          mapping[product_type]["properties"][vocab.vocabulary_machine_name] = {
                             "type": "string",
                             "index": "not_analyzed"
                           };
-                          doc["vocabs"][vocab.vocabulary_machine_name] = term.term_name;
+                          doc[vocab.vocabulary_machine_name] = term.term_name;
                           docs.push(doc);
                         });
                       });
