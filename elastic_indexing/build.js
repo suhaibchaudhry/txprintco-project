@@ -132,16 +132,16 @@ txprintcoData.makeDataRequest('filters-object',
                             "type": "string",
                             "index": "not_analyzed"
                           };
+
                           products[product][vocab.vocabulary_machine_name] = term.term_name;
                           //docs.push(doc);
                         });
                       });
                     });
 
-                    var docs = [];
-
                     _.each(products, function(doc, product_id) {
                       doc.product_id = product_id;
+                      doc.product_type = product_type;
                       docs.push(doc);
                     });
 
