@@ -111,25 +111,38 @@ txprintcoData.makeDataRequest('filters-object',
                       }
                     };
 
+                    //Cluster Products
+                    var products = {};
+
                     _.each(vocabs, function(vocab) {
                       _.each(vocab.options, function(term) {
                         _.each(term.products, function(product) {
-                          var doc = {
+                          /*var doc = {
                               product_type: product_type,
                               //term_name: term.term_name,
                               //vocab_machine_name: vocab.vocabulary_machine_name,
                               //vocab_name: vocab.vocabulary_en_name,
-                              vocabs: {},
                               product_id: product
-                          };
+                          };*/
+                          if(!_.has(products, product)) {
+                            products[product] = {};
+                          }
+
                           mapping[product_type]["properties"][vocab.vocabulary_machine_name] = {
                             "type": "string",
                             "index": "not_analyzed"
                           };
-                          doc[vocab.vocabulary_machine_name] = term.term_name;
-                          docs.push(doc);
+                          products[product][vocab.vocabulary_machine_name] = term.term_name;
+                          //docs.push(doc);
                         });
                       });
+                    });
+
+                    var docs = [];
+
+                    _.each(products, function(doc, product_id) {
+                      doc.product_id = product_id;
+                      docs.push(doc);
                     });
 
                     var req = http.request({
