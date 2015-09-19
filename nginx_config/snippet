@@ -1,0 +1,47 @@
+/* Ripple Out */
+@include keyframes(#{$nameSpace}-ripple-out) {
+	100% {
+		top: -(6px + 6px);
+		right: -(6px + 6px);
+		bottom: -(6px + 6px);
+		left: -(6px + 6px);
+		opacity: 1;
+	}
+}
+
+@include keyframes(#{$nameSpace}-ripple-out-in) {
+	100% {
+		top: -(0px + 0px);
+		right: -(0px + 0px);
+		bottom: -(0px + 0px);
+		left: -(0px + 0px);
+		opacity: 1;
+	}
+}
+
+@mixin ripple-out {
+	$outerBorderWidth: 6px;
+	$innerBorderWidth: 6px;
+
+	@include hacks();
+	position: relative;
+
+	&:before {
+		content: '';
+		position: absolute;
+		border: $primaryColor solid $outerBorderWidth;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		animation-fill-mode: forwards;
+		animation-timing-function: cubic-bezier(.09,.44,.21,.58);
+		@include prefixed(animation-duration, .5s);
+	}
+
+	&:hover:before,
+	&:focus:before,
+	&:active:before {
+		@include prefixed(animation-name, #{$nameSpace}-ripple-out);
+	}
+}
