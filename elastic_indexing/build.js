@@ -55,7 +55,7 @@ http.request({
   port: 9200,
   path: '/product',
   method: 'DELETE',
-  headers: headers 
+  headers: headers
 }).end();
 
 console.log('Building New Index');
@@ -95,6 +95,20 @@ var req = http.request({
 //   }
 // }));
 req.end();
+
+var indexDocs = function(docs) {
+  _.each(docs, function(doc) {
+    elasticSearchClient.index('product', doc.product_type, doc)
+      .on('data', function(data) {
+          console.log(data)
+      }).exec();
+  });
+}
+
+var populateDocument = function(doc, err, data) {
+  console.log(doc);
+  console.log(data);
+}
 
 //Build New Index
 txprintcoData.makeDataRequest('filters-object',
@@ -151,8 +165,15 @@ txprintcoData.makeDataRequest('filters-object',
                     _.each(products, function(doc, product_id) {
                       doc.product_id = product_id;
                       doc.product_type = product_type;
-                      docs.push(doc);
+                      txprintcoData.makeDataRequest('vendor_product_id_map',
+                											{key: product_id},
+                											_.bind(populateDocument, doc),
+                											function() {
+                                        console.log('Could not fetch product.');
+                                      });
                     });
+
+
 
                     var req = http.request({
                       host: 'office.uitoux.com',
@@ -168,13 +189,6 @@ txprintcoData.makeDataRequest('filters-object',
                     });
                     req.write(JSON.stringify(mapping));
                     req.end();
-                  });
-
-                  _.each(docs, function(doc) {
-                    elasticSearchClient.index('product', doc.product_type, doc)
-                      .on('data', function(data) {
-                          console.log(data)
-                      }).exec();
                   });
                 },
                 function() {
