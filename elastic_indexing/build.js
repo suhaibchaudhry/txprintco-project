@@ -167,7 +167,7 @@ txprintcoData.makeDataRequest('filters-object',
                       doc.product_type = product_type;
                       txprintcoData.makeDataRequest('vendor_product_id_map',
                 											{key: product_id},
-                											_.bind(populateDocument, doc),
+                											_.bind(populateDocument, this, doc),
                 											function() {
                                         console.log('Could not fetch product.');
                                       });
