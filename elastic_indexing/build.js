@@ -21,8 +21,12 @@ var txprintco = {
 };
 
 var elasticSearchClient = new ElasticSearchClient({
-    host: 'localhost',
-    port: 9200
+    host: 'office.uitoux.com',
+    port: 9200,
+    auth: {
+      username: "digerpaji",
+      password: "xyz786"
+    }
 });
 
 var txprintcoData = {
@@ -42,21 +46,26 @@ var txprintcoData = {
 
 //Delete Existing Index
 console.log('Deleting Existing Index');
+var headers = {
+     'Authorization': 'Basic ' + new Buffer('digerpaji' + ':' + 'xyz786').toString('base64')
+};
 
 http.request({
-  host: 'localhost',
+  host: 'office.uitoux.com',
   port: 9200,
   path: '/product',
-  method: 'DELETE'
+  method: 'DELETE',
+  headers: headers 
 }).end();
 
 console.log('Building New Index');
 
 var req = http.request({
-  host: 'localhost',
+  host: 'office.uitoux.com',
   port: 9200,
   path: '/product',
-  method: 'PUT'
+  method: 'PUT',
+  headers: headers
 }, function(res) {
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
@@ -146,10 +155,11 @@ txprintcoData.makeDataRequest('filters-object',
                     });
 
                     var req = http.request({
-                      host: 'localhost',
+                      host: 'office.uitoux.com',
                       port: 9200,
                       path: '/product/'+product_type+'/_mapping',
-                      method: 'PUT'
+                      method: 'PUT',
+  		      headers: headers
                     }, function(res) {
                         res.setEncoding('utf8');
                         res.on('data', function (chunk) {
