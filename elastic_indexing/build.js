@@ -96,18 +96,13 @@ var req = http.request({
 // }));
 req.end();
 
-var indexDocs = function(docs) {
-  _.each(docs, function(doc) {
-    elasticSearchClient.index('product', doc.product_type, doc)
-      .on('data', function(data) {
-          console.log(data)
-      }).exec();
-  });
-}
-
 var populateDocument = function(doc, err, data) {
-  console.log(doc);
-  console.log(data);
+  //console.log(doc);
+  doc.base_price = parseFloat(data[0]['value'].base_price);
+  elasticSearchClient.index('product', doc.product_type, doc)
+    .on('data', function(data) {
+        console.log(data)
+  }).exec();
 }
 
 //Build New Index
