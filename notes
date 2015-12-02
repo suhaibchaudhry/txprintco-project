@@ -11,3 +11,5 @@ Crawl should not cache products/ index pages.
 Implement quantity discounts and other run size prices later.
 
 Remove duplicates by selecting first, later crawl description for each ?idc flag and figure out something to do with it.
+
+Crawl mailing templates with a special different script.
