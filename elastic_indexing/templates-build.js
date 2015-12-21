@@ -6,7 +6,7 @@ var ElasticSearchClient = require('elasticsearchclient');
 
 var host = 'root:xyz786@office.uitoux.com';
 var port = '5988';
-var dbname = 'txprintco_dev_stage16';
+var dbname = 'txprintco_template_maps';
 
 var nano = require("nano")('http://'+host+':'+port);
 var db = nano.db.use(dbname);
@@ -53,7 +53,7 @@ var headers = {
 http.request({
   host: 'office.uitoux.com',
   port: 9200,
-  path: '/product',
+  path: '/template',
   method: 'DELETE',
   headers: headers
 }).end();
@@ -63,7 +63,7 @@ console.log('Building New Index');
 var req = http.request({
   host: 'office.uitoux.com',
   port: 9200,
-  path: '/product',
+  path: '/template',
   method: 'PUT',
   headers: headers
 }, function(res) {
@@ -72,33 +72,10 @@ var req = http.request({
         console.log("Create Fresh Product Index: " + chunk);
     });
 });
-// req.write(JSON.stringify({
-//   "mappings": {
-//     "product": {
-//       "dynamic_templates": [
-//         {
-//           "string_template": {
-//             "match": "*",
-//             "mapping": {
-//               "type": "string",
-//               "index": "not_analyzed"
-//             }
-//           }
-//         }
-//       ],
-//       "properties": {
-//         "vocabs": {
-//           "type": "nested"
-//         }
-//       }
-//     }
-//   }
-// }));
 req.end();
 
 var populateDocument = function(doc, err, data) {
   //console.log(doc);
-  doc.base_price = parseFloat(data[0]['value'].base_price);
   elasticSearchClient.index('product', doc.product_type, doc)
     .on('data', function(data) {
         console.log(data)
@@ -106,8 +83,8 @@ var populateDocument = function(doc, err, data) {
 }
 
 //Build New Index
-txprintcoData.makeDataRequest('filters-object',
-                {},
+txprintcoData.makeDataRequest('_all_docs',
+                {include_docs: true},
                 function(req, res) {
                   var docs = [];
 
