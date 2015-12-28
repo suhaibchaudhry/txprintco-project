@@ -55,3 +55,43 @@ server {
         expires                 max;
     }
 }
+
+server {
+    listen 80;
+    server_name     tools.4over.com;
+
+    client_body_buffer_size  100m;
+
+    set $login_rpc "";
+    if ( $request_uri ~ ^/login\.php(\?logout)?$ ) {
+        set $login_rpc "login";
+    }
+
+    if ( $request_uri ~ ^/$ ) {
+        set $login_rpc "login";
+    }
+
+    proxy_ignore_headers    X-Accel-Expires Expires Cache-Control Set-Cookie;
+    proxy_hide_header       Pragma;
+    proxy_hide_header       Expires;
+    proxy_hide_header       Cache-Control;
+
+    proxy_cache_methods     GET HEAD POST;
+
+    proxy_cache_min_uses    1;
+
+    location / {
+        proxy_cache             fourover_files;
+        proxy_pass              http://tools.4over.com/;
+
+        proxy_cache_key         $scheme$request_method$request_uri$is_args$args$request_uri$request_body;
+        proxy_no_cache          $login_rpc;
+        proxy_cache_valid       10y;
+        proxy_http_version      1.1;
+
+        add_header              X-Cache-Status $upstream_cache_status;
+        add_header              X-Handled-By $proxy_host;
+
+        expires                 max;
+    }
+}
