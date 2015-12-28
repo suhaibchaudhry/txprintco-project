@@ -1,18 +1,8 @@
 server {
-    listen       80;
-    server_name  trade.4over.com;
-    rewrite ^ https://trade.4over.com$request_uri;
-}
-
-server {
-    listen 443;
-    server_name     trade.4over.com;
+    listen 80;
+    server_name     tools.4over.com;
 
     client_body_buffer_size  100m;
-
-    ssl on;
-    ssl_certificate /home/suhaib/ssl/server.crt;
-    ssl_certificate_key /home/suhaib/ssl/server.key;
 
     set $login_rpc "";
     if ( $request_uri ~ ^/login\.php(\?logout)?$ ) {
@@ -20,14 +10,6 @@ server {
     }
 
     if ( $request_uri ~ ^/$ ) {
-        set $login_rpc "login";
-    }
-
-    if ( $request_uri ~ ^/orders/?$  ) {
-	     set $login_rpc "login";
-    }
-
-    if ( $request_uri ~ ^/products/.*/$  ) {
         set $login_rpc "login";
     }
 
@@ -41,8 +23,8 @@ server {
     proxy_cache_min_uses    1;
 
     location / {
-        proxy_cache             fourover;
-        proxy_pass              https://trade.4over.com/;
+        proxy_cache             fourover_files;
+        proxy_pass              http://tools.4over.com/;
 
         proxy_cache_key         $scheme$request_method$request_uri$is_args$args$request_uri$request_body;
         proxy_no_cache          $login_rpc;
