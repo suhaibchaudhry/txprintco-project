@@ -83,23 +83,28 @@ var populateDocument = function(doc, err, data) {
 }
 
 //Build New Index
-txprintcoData.makeDataRequest('_all_docs',
+txprintcoData.makeDataRequest('templates_details',
                 {include_docs: true},
                 function(req, res) {
                   var docs = [];
 
                   _.each(res, function(rows) {
-                    var vocabs = rows['value']['categories'];
-                    var product_type = rows['key'];
+                    var category = rows['value']['category_info'];
+                    var template_files = rows['value']['templates'];
+                    var category_key = rows['key'];
 
                     var mapping = {};
-                    mapping[product_type] = {
+                    mapping[category_key] = {
                       "properties": {
-                        "product_type": {
+                        "category_name": {
                           "type": "string",
                           "index": "not_analyzed"
                         },
-                        "product_id": {
+                        "category_key": {
+                          "type": "string",
+                          "index": "not_analyzed"
+                        },
+                        "category_id": {
                           "type": "string",
                           "index": "not_analyzed"
                         }
@@ -107,32 +112,51 @@ txprintcoData.makeDataRequest('_all_docs',
                     };
 
                     //Cluster Products
-                    var products = {};
+                    var templates = {};
 
-                    _.each(vocabs, function(vocab) {
-                      _.each(vocab.options, function(term) {
-                        _.each(term.products, function(product) {
-                          /*var doc = {
-                              product_type: product_type,
-                              //term_name: term.term_name,
-                              //vocab_machine_name: vocab.vocabulary_machine_name,
-                              //vocab_name: vocab.vocabulary_en_name,
-                              product_id: product
-                          };*/
-                          if(!_.has(products, product)) {
-                            products[product] = {};
-                          }
-
-                          mapping[product_type]["properties"][vocab.vocabulary_machine_name] = {
-                            "type": "string",
-                            "index": "not_analyzed"
-                          };
-
-                          products[product][vocab.vocabulary_machine_name] = term.term_name;
-                          //docs.push(doc);
+                    _.each(template_files, (fileSet, fileType) => {
+                      _.each(fileSet, (file, i) => {
+                        var fileNameP = file.path.split("/");
+                        var fileName = fileNameP[fileNameP.length-1];
+                        var tags = '';
+                        _.each(file.type, (t) => {
+                          tags += ' ('+t+')';
                         });
+                        templates[fileName] = {
+                          fileName,
+                          filePath: file.path,
+                          name: file.text+tags,
+                          category_name: category.text,
+                          category_key: category.key,
+                          category_id: category.id
+                        };
                       });
                     });
+
+                    // _.each(vocabs, function(vocab) {
+                    //   _.each(vocab.options, function(term) {
+                    //     _.each(term.products, function(product) {
+                    //       /*var doc = {
+                    //           product_type: product_type,
+                    //           //term_name: term.term_name,
+                    //           //vocab_machine_name: vocab.vocabulary_machine_name,
+                    //           //vocab_name: vocab.vocabulary_en_name,
+                    //           product_id: product
+                    //       };*/
+                    //       if(!_.has(products, product)) {
+                    //         products[product] = {};
+                    //       }
+                    //
+                    //       mapping[product_type]["properties"][vocab.vocabulary_machine_name] = {
+                    //         "type": "string",
+                    //         "index": "not_analyzed"
+                    //       };
+                    //
+                    //       products[product][vocab.vocabulary_machine_name] = term.term_name;
+                    //       //docs.push(doc);
+                    //     });
+                    //   });
+                    // });
 
                     _.each(products, function(doc, product_id) {
                       doc.product_id = product_id;
