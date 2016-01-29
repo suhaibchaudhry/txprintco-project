@@ -74,9 +74,9 @@ var req = http.request({
 });
 req.end();
 
-var populateDocument = function(doc, err, data) {
+var populateDocument = function(doc) {
   //console.log(doc);
-  elasticSearchClient.index('product', doc.product_type, doc)
+  elasticSearchClient.index('template', doc.category_id, doc)
     .on('data', function(data) {
         console.log(data)
   }).exec();
@@ -158,15 +158,8 @@ txprintcoData.makeDataRequest('templates_details',
                     //   });
                     // });
 
-                    _.each(products, function(doc, product_id) {
-                      doc.product_id = product_id;
-                      doc.product_type = product_type;
-                      txprintcoData.makeDataRequest('vendor_product_id_map',
-                											{key: product_id},
-                											_.bind(populateDocument, this, doc),
-                											function() {
-                                        console.log('Could not fetch product.');
-                                      });
+                    _.each(template_files, function(file, fileName) {
+                      populateDocument(file);
                     });
 
 
