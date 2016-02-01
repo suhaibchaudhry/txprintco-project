@@ -17,7 +17,7 @@ var txprintco = {
     database: db,
     client: nano,
     db: db,
-    design_doc: 'txprintco'
+    design_doc: 'txprintco_templates'
 };
 
 var elasticSearchClient = new ElasticSearchClient({
@@ -53,9 +53,14 @@ var headers = {
 http.request({
   host: 'office.uitoux.com',
   port: 9200,
-  path: '/template',
+  path: '/templates',
   method: 'DELETE',
   headers: headers
+}, function(res) {
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+        console.log("Deleted Index: " + chunk);
+    });
 }).end();
 
 console.log('Building New Index');
@@ -63,20 +68,20 @@ console.log('Building New Index');
 var req = http.request({
   host: 'office.uitoux.com',
   port: 9200,
-  path: '/template',
+  path: '/templates',
   method: 'PUT',
   headers: headers
 }, function(res) {
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
-        console.log("Create Fresh Product Index: " + chunk);
+        console.log("Create Fresh Template Index: " + chunk);
     });
 });
 req.end();
 
 var populateDocument = function(doc) {
   //console.log(doc);
-  elasticSearchClient.index('template', doc.category_id, doc)
+  elasticSearchClient.index('templates', doc.category_id, doc)
     .on('data', function(data) {
         console.log(data)
   }).exec();
@@ -92,9 +97,9 @@ txprintcoData.makeDataRequest('templates_details',
                     var category = rows['value']['category_info'];
                     var template_files = rows['value']['templates'];
                     var category_key = rows['key'];
-
                     var mapping = {};
-                    mapping[category_key] = {
+
+                    mapping[category.id] = {
                       "properties": {
                         "category_name": {
                           "type": "string",
@@ -115,71 +120,48 @@ txprintcoData.makeDataRequest('templates_details',
                     var templates = {};
 
                     _.each(template_files, (fileSet, fileType) => {
-                      _.each(fileSet, (file, i) => {
-                        var fileNameP = file.path.split("/");
-                        var fileName = fileNameP[fileNameP.length-1];
-                        var tags = '';
-                        _.each(file.type, (t) => {
-                          tags += ' ('+t+')';
+                      _.each(fileSet.files, (files, i) => {
+                        _.each(files, (file, i) => {
+                          var fileNameP = file.path.split("/");
+                          var fileName = fileNameP[fileNameP.length-1];
+                          var tags = '';
+                          _.each(file.type, (t) => {
+                            tags += ' ('+t+')';
+                          });
+                          templates[fileName] = {
+                            fileName,
+                            filePath: file.path,
+                            name: file.text+tags,
+                            category_name: category.text,
+                            category_key: category.key,
+                            category_id: category.id
+                          };
                         });
-                        templates[fileName] = {
-                          fileName,
-                          filePath: file.path,
-                          name: file.text+tags,
-                          category_name: category.text,
-                          category_key: category.key,
-                          category_id: category.id
-                        };
                       });
                     });
-
-                    // _.each(vocabs, function(vocab) {
-                    //   _.each(vocab.options, function(term) {
-                    //     _.each(term.products, function(product) {
-                    //       /*var doc = {
-                    //           product_type: product_type,
-                    //           //term_name: term.term_name,
-                    //           //vocab_machine_name: vocab.vocabulary_machine_name,
-                    //           //vocab_name: vocab.vocabulary_en_name,
-                    //           product_id: product
-                    //       };*/
-                    //       if(!_.has(products, product)) {
-                    //         products[product] = {};
-                    //       }
-                    //
-                    //       mapping[product_type]["properties"][vocab.vocabulary_machine_name] = {
-                    //         "type": "string",
-                    //         "index": "not_analyzed"
-                    //       };
-                    //
-                    //       products[product][vocab.vocabulary_machine_name] = term.term_name;
-                    //       //docs.push(doc);
-                    //     });
-                    //   });
-                    // });
-
-                    _.each(template_files, function(file, fileName) {
-                      populateDocument(file);
-                    });
-
-
 
                     var req = http.request({
                       host: 'office.uitoux.com',
                       port: 9200,
-                      path: '/product/'+product_type+'/_mapping',
+                      path: '/templates/'+category.id+'/_mapping',
                       method: 'PUT',
-  		      headers: headers
+  		                headers: headers
                     }, function(res) {
                         res.setEncoding('utf8');
-                        res.on('data', function (chunk) {
-                            console.log("Setup Mapping ("+product_type+"): " + chunk);
+                        res.on('end', function (chunk) {
+                            console.log("Setup Mapping ("+category.id+"): " + chunk);
+
+                            //_.each(templates, function(file, fileName) {
+                            //  console.log(file);
+                            //  populateDocument(file);
+                            //});
                         });
                     });
                     req.write(JSON.stringify(mapping));
                     req.end();
                   });
                 },
-                function() {
+                function(err) {
+                  console.log(err);
                   console.log('Error contacting database.');
                 });
