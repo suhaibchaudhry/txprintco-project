@@ -129,7 +129,7 @@ txprintcoData.makeDataRequest('templates_details',
                             tags += ' ('+t+')';
                           });
                           templates[fileName] = {
-                            fileName,
+                            fileName: fileName,
                             filePath: file.path,
                             name: file.text+tags,
                             category_name: category.text,
@@ -150,15 +150,14 @@ txprintcoData.makeDataRequest('templates_details',
                         res.setEncoding('utf8');
                         res.on('end', function (chunk) {
                             console.log("Setup Mapping ("+category.id+"): " + chunk);
-
-                            //_.each(templates, function(file, fileName) {
-                            //  console.log(file);
-                            //  populateDocument(file);
-                            //});
                         });
                     });
                     req.write(JSON.stringify(mapping));
                     req.end();
+
+                    _.each(templates, function(file, fileName) {
+                     populateDocument(file);
+                    });
                   });
                 },
                 function(err) {
