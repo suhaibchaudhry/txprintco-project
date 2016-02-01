@@ -87,6 +87,42 @@ var populateDocument = function(doc) {
   }).exec();
 }
 
+var mapping = {};
+
+mapping["mappings"] = {
+  "_default_": {
+    "properties": {
+      "category_name": {
+        "type": "string",
+        "index": "not_analyzed"
+      },
+      "category_key": {
+        "type": "string",
+        "index": "not_analyzed"
+      },
+      "category_id": {
+        "type": "string",
+        "index": "not_analyzed"
+      }
+    }
+  }
+};
+
+var req = http.request({
+  host: 'office.uitoux.com',
+  port: 9200,
+  path: '/templates',
+  method: 'PUT',
+  headers: headers
+}, function(res) {
+    res.setEncoding('utf8');
+    res.on('end', function (chunk) {
+        console.log("Setup Mapping: " + chunk);
+    });
+});
+req.write(JSON.stringify(mapping));
+req.end();
+
 //Build New Index
 txprintcoData.makeDataRequest('templates_details',
                 {include_docs: true},
@@ -97,24 +133,6 @@ txprintcoData.makeDataRequest('templates_details',
                     var category = rows['value']['category_info'];
                     var template_files = rows['value']['templates'];
                     var category_key = rows['key'];
-                    var mapping = {};
-
-                    mapping[category.id] = {
-                      "properties": {
-                        "category_name": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "category_key": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        },
-                        "category_id": {
-                          "type": "string",
-                          "index": "not_analyzed"
-                        }
-                      }
-                    };
 
                     //Cluster Products
                     var templates = {};
@@ -139,21 +157,6 @@ txprintcoData.makeDataRequest('templates_details',
                         });
                       });
                     });
-
-                    var req = http.request({
-                      host: 'office.uitoux.com',
-                      port: 9200,
-                      path: '/templates/'+category.id+'/_mapping',
-                      method: 'PUT',
-  		                headers: headers
-                    }, function(res) {
-                        res.setEncoding('utf8');
-                        res.on('end', function (chunk) {
-                            console.log("Setup Mapping ("+category.id+"): " + chunk);
-                        });
-                    });
-                    req.write(JSON.stringify(mapping));
-                    req.end();
 
                     _.each(templates, function(file, fileName) {
                      populateDocument(file);
