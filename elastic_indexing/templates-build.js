@@ -65,30 +65,7 @@ http.request({
 
 console.log('Building New Index');
 
-var req = http.request({
-  host: 'office.uitoux.com',
-  port: 9200,
-  path: '/templates',
-  method: 'PUT',
-  headers: headers
-}, function(res) {
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-        console.log("Create Fresh Template Index: " + chunk);
-    });
-});
-req.end();
-
-var populateDocument = function(doc) {
-  //console.log(doc);
-  elasticSearchClient.index('templates', doc.category_id, doc)
-    .on('data', function(data) {
-        console.log(data)
-  }).exec();
-}
-
 var mapping = {};
-
 mapping["mappings"] = {
   "_default_": {
     "properties": {
@@ -116,12 +93,20 @@ var req = http.request({
   headers: headers
 }, function(res) {
     res.setEncoding('utf8');
-    res.on('end', function (chunk) {
-        console.log("Setup Mapping: " + chunk);
+    res.on('data', function (chunk) {
+        console.log("Create Fresh Template Index: " + chunk);
     });
 });
 req.write(JSON.stringify(mapping));
 req.end();
+
+var populateDocument = function(doc) {
+  //console.log(doc);
+  elasticSearchClient.index('templates', doc.category_id, doc)
+    .on('data', function(data) {
+        console.log(data)
+  }).exec();
+}
 
 //Build New Index
 txprintcoData.makeDataRequest('templates_details',
