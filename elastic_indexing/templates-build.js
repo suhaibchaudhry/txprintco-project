@@ -119,13 +119,13 @@ txprintcoData.makeDataRequest('templates_details',
                     //Cluster Products
                     var templates = {};
 
-                    _.each(template_files, (fileSet, fileType) => {
-                      _.each(fileSet.files, (files, i) => {
-                        _.each(files, (file, i) => {
+                    _.each(template_files, function(fileSet, fileType) {
+                      _.each(fileSet.files, function(files, i) {
+                        _.each(files, function(file, i) {
                           var fileNameP = file.path.split("/");
                           var fileName = fileNameP[fileNameP.length-1];
                           var tags = '';
-                          _.each(file.type, (t) => {
+                          _.each(file.type, function(t) {
                             tags += ' ('+t+')';
                           });
                           templates[fileName] = {
