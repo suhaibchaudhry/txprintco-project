@@ -77,6 +77,10 @@ mapping["mappings"] = {
           "type": "string",
           "index": "not_analyzed"
       },
+      "extension": {
+          "type": "string",
+          "index": "not_analyzed"
+      },
       "category_key": {
         "type": "string",
         "index": "not_analyzed"
@@ -146,6 +150,7 @@ txprintcoData.makeDataRequest('templates_details',
                           }
 
                           templates[fileName] = {
+                            extension: /(?:\.([^.]+))?$/.exec(fileName)[1],
                             fileName: fileName,
                             filePath: file.path,
                             dimensions: dimensions.join(" x "),

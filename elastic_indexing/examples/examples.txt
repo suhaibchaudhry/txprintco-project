@@ -1,3 +1,17 @@
+GET /templates/flyers-brochures/_search
+{
+    "query": {
+        "filtered": {
+            "query": {
+                     "match": {
+                        "name": "Accordion Fold"
+                      }
+            },
+            "filter":   { "and": [ { "terms": { "dimensions" : ["8.5 x 11"] } } ] }
+        }
+    }
+}
+
 GET /templates/_search
 {
     "query": {
