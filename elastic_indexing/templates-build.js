@@ -133,7 +133,7 @@ txprintcoData.makeDataRequest('templates_details',
                           var fileName = fileNameP[fileNameP.length-1];
                           var tags = '';
                           if(!_.isEmpty(fileSet.subcat)) {
-                            tags = '(' + fileSet.subcat + ') ';
+                            tags = ' (' + fileSet.subcat + ')';
                           }
                           _.each(file.type, function(t) {
                             tags += ' ('+t+')';
