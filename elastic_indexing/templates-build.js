@@ -73,6 +73,10 @@ mapping["mappings"] = {
         "type": "string",
         "index": "not_analyzed"
       },
+      "dimensions": {
+          "type": "string",
+          "index": "not_analyzed"
+      },
       "category_key": {
         "type": "string",
         "index": "not_analyzed"
@@ -131,9 +135,17 @@ txprintcoData.makeDataRequest('templates_details',
                           _.each(file.type, function(t) {
                             tags += ' ('+t+')';
                           });
+                          var regex = /\d+(\.\d+)?/g;
+                          var dimensions = [];
+                          var dimension = '';
+                          while((dimension = regex.exec(file.text)) != null) {
+                            dimensions.push(dimension[0]);
+                          }
+
                           templates[fileName] = {
                             fileName: fileName,
                             filePath: file.path,
+                            dimensions: dimensions.join(" x "),
                             name: file.text+tags,
                             category_name: category.text,
                             category_key: category.key,
