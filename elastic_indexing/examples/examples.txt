@@ -1,3 +1,45 @@
+GET /templates/_search
+{
+    "query": {
+        "filtered": {
+            "query": {
+                     "match": {
+                        "name": "(Round Corners) (Rounded 1/4\") (Rounded 2 Corners)"
+                      }
+            },
+            "filter":   { "and": [ { "terms": { "dimensions" : ["2.5 x 3.5"] } } ] }
+        }
+    }
+}
+
+GET /templates/_search
+{
+    "query": {
+        "filtered": {
+            "query": {
+                     "match": {
+                        "name": "Standard Corners"
+                      }
+            },
+            "filter":   { "and": [ { "terms": { "dimensions" : ["2.5 x 2.5"] } } ] }
+        }
+    }
+}
+
+GET /templates/_search
+{
+    "query": {
+        "filtered": {
+            "query": {
+                     "match": {
+                        "name": "(Rounded 1/8\") (Two Rounded Corners)"
+                      }
+            },
+            "filter":   { "and": [ { "terms": { "dimensions" : ["1.5 x 3.5"] } } ] }
+        }
+    }
+}
+
 GET /product/business-cards/_search
 {
      "query": {
