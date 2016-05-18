@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Asad Hasan",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ringcentral": "^2.0.6"
+  }
 }
