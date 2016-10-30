@@ -11,8 +11,8 @@ server {
     client_body_buffer_size  100m;
 
     ssl on;
-    ssl_certificate /home/suhaib/ssl/server.crt;
-    ssl_certificate_key /home/suhaib/ssl/server.key;
+    ssl_certificate /home/uitoux/ssl/server.crt;
+    ssl_certificate_key /home/uitoux/ssl/server.key;
 
     set $login_rpc "";
     if ( $request_uri ~ ^/login\.php(\?logout)?$ ) {
